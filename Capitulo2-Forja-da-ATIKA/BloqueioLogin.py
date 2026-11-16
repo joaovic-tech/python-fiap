@@ -53,6 +53,53 @@ Permitido: if, elif, else, and, or, not, in, input(), int(), print(),
 .upper(), .strip(), f-strings, tuplas, constantes.
 Proibido: for, while, def, try.
 """
-# TODO (fim do curso): refatorar este exercício usando todo o conhecimento
-# adquirido até lá e comparar com esta versão, para medir minha evolução.
-# Não apagar a versão atual: ela é o registro do meu nível hoje.
+# TODO (fim do curso): Criar uma ValueError para tratamento de dados e refatorar todo o código
+
+# CONSTANTES
+RESPOSTAS_SIM = "SIM"
+RESPOSTAS_NAO = ("NAO", "NÃO")
+MFA_MIN = 3
+MFA_MAX = 4
+HORA_ACESSO_MIN = 0
+HORA_ACESSO_MAX = 23
+INICIO_EXPEDIENTE = 7
+FIM_EXPEDIENTE = 20
+
+usuario = input("Nome de usuário: ").strip()
+qtd_tentativas = int(input("Quantidade de tentativas de senha erradas: "))
+resposta_dispositivo = input("O dispositivo é conhecido? (SIM/NÃO): ").strip().upper()
+hora_acesso = int(input("Hora do acesso: "))
+
+existe_erro = False
+
+if not usuario:
+    print("DADOS INVÁLIDOS\nMotivo: Nome de usuário não pode ser vazio")
+    existe_erro = True
+if qtd_tentativas < 0:
+    print(f"DADOS INVÁLIDOS\nMotivo: Tentativas \"{qtd_tentativas}\" é um valor negativo")
+    existe_erro = True
+
+if resposta_dispositivo != RESPOSTAS_SIM and resposta_dispositivo not in RESPOSTAS_NAO:
+    print("DADOS INVÁLIDOS\nMotivo: Digite SIM ou NÃO em: \"dispositivo é conhecido?\"")
+    existe_erro = True
+if hora_acesso < HORA_ACESSO_MIN or hora_acesso > HORA_ACESSO_MAX:
+    print(f"DADOS INVÁLIDOS\nMotivo: A hora deve ser entre {HORA_ACESSO_MIN} e {HORA_ACESSO_MAX}")
+    existe_erro = True
+
+if not existe_erro:
+    dispositivo_conhecido = resposta_dispositivo == RESPOSTAS_SIM
+    fora_do_expediente = hora_acesso < INICIO_EXPEDIENTE or hora_acesso >= FIM_EXPEDIENTE
+
+    if MFA_MIN <= qtd_tentativas <= MFA_MAX:
+        resultado_conta = "Exigir MFA (segundo fator)"
+    elif qtd_tentativas > MFA_MAX:
+        resultado_conta = "Conta BLOQUEADA"
+    else:
+        resultado_conta = "Conta LIBERADA"
+
+    print("-" * 19)
+    print("RESULTADO DA CONTA:")
+    print(resultado_conta)
+
+    if not dispositivo_conhecido and fora_do_expediente:
+        print(f"ALERTA SOC: acesso suspeito de {usuario.upper()}")
